@@ -34,9 +34,10 @@ def main():
                 if(user_answer == 'y'):
                     id = int(input("Enter your ID: \n"))
                     user_found = False
-                    for users in Author.authors:
-                        if users.id == id:
-                            user_found = True
+                    # for users in Author.authors:
+                    #     if users.id == id:
+                    #         user_found = True
+                    user_found = Author.check_username_exists(id)
                     if not user_found:
                         print("You have not registered yet! Enter a username and password:")
                         username = str(input("Username: "))
@@ -73,9 +74,10 @@ def main():
                 if(user_answer == 'y'):
                     id = int(input("Enter your ID: \n"))
                     user_found = False
-                    for users in Customer.customers:
-                        if users.id == id:
-                            user_found = True
+                    # for users in Customer.customers:
+                    #     if users.id == id:
+                    #         user_found = True
+                    user_found = Customer.check_username_exists(id)
                     if not user_found:
                         print("You have not registered yet! Enter a username and password:")
                         username = str(input("Username: "))
