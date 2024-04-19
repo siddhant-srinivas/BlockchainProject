@@ -28,7 +28,7 @@ class Author:
             return False
 
         for user in existing_users:
-            if int(user[1]) == id:
+            if int(user[2]) == id:
                 return True
         return False
 
@@ -60,6 +60,6 @@ class Customer:
             return False
 
         for user in existing_users:
-            if int(user[1]) == id:
+            if int(user[2]) == id:
                 return True
         return False
