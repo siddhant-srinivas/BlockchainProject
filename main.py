@@ -37,7 +37,7 @@ def main():
         🛒 Choose an action:
         1. Login / Signup 
         2. Buy a research paper / Comic book
-        3. View all the products and their owners
+        3. View all the transactions of the user
         4. Update product status/Add transaction
         5. Mine a block
         6. View a block
@@ -142,13 +142,14 @@ def main():
                 print('Challenge-Response Authentication successful! ')
 
             user_found = False
-            for users in Customer.customers:
-                if users.id == customerId:
-                    user_found = True
+            user_found = Customer.check_username_exists(id)
+            # for users in Customer.customers:
+            #     if users.id == customerId:
+            #         user_found = True
             if not user_found:
                 print("Customer not found. Please register and try again.\n")
 
-            elif len(Author.authors) == 0:
+            elif Author.check_length() == 0:
                 print("There are no authors available. Please register an author\n")
 
             elif customerId in busyCustomers:
@@ -169,14 +170,83 @@ def main():
                              'customer_id': customerId,
                              'author_id': authorId, 'pid': pid,
                              'relation': "cta"})
+                        # Transactions(datetime.now().timestamp(), customerId, authorId, pid, secretkey, "cta")
                         print("Order placed successfully!\n")
                         #products.remove(pid)
                 else:
                     print("Product unavailable\n")
 
-        elif user_input == '3': ########################################################################################################################################
-            for key, value in products.items():
-                print(f"Paper number: {key}, Author ID: {value}")
+        # elif user_input == '3': ########################################################################################################################################
+        #     for key, value in products.items():
+        #         print(f"Paper number: {key}, Author ID: {value}")
+        elif user_input == '3': 
+            role = input("Enter A to login/signup as an Author and C to login/signup as a Customer\n").lower()
+            if role == 'a':
+                user_answer = input("Have you already registered? Enter y for yes and n for no\n").lower()
+                if(user_answer == 'y'):
+                    id = int(input("Enter your ID: \n"))
+                    user_found = False
+                    user_found = Author.check_username_exists(id)
+                    if not user_found:
+                        print("You have not registered yet! Enter a username and password:")
+                        username = str(input("Username: "))
+                        password = str(input("Password: "))
+                        secretkey = ''.join(random.choices(string.ascii_lowercase + string.digits, k=12))    #generates a random string of length 5 that we are taking as secret key for this user
+                        print("Your secret key is: ", secretkey)
+                        if username != '' and password != '':
+                            Author(username, password, id, secretkey)
+                            print(f"Author {username} registered successfully")
+                        else:
+                            print("\n Username and/or password can't be empty, please try again \n")
+            elif role == 'c':
+                user_answer = input("Have you already registered? Enter y for yes and n for no\n").lower()
+                if(user_answer == 'y'):
+                    id = int(input("Enter your ID: \n"))
+                    user_found = False
+                    # for users in Customer.customers:
+                    #     if users.id == id:
+                    #         user_found = True
+                    user_found = Customer.check_username_exists(id)
+                    secretkey = Customer.retrieve_secretkey(id) 
+                    auth = verify_user(secretkey) 
+                    if not user_found:
+                        print("You have not registered yet!")
+                        # username = str(input("Username: "))
+                        # password = str(input("Password: "))
+                        # secretkey = ''.join(random.choices(string.ascii_lowercase + string.digits, k=12))    #generates a random string of length 5 that we are taking as secret key for this user
+                        # print("Your secret key is: ", secretkey)
+                        if username != '' and password != '':
+                            Customer(username, password, id, secretkey)
+                            print(f"Customer {username} registered successfully")
+                        else:
+                            print("\n Username and/or password can't be empty, please try again \n")
+                elif(user_answer == 'n'):
+                    id = int(input("Enter an appropriate customer ID: \n"))
+                    print('Enter a username and password:')
+                    username = str(input("Username: "))
+                    password = str(input("Password: "))
+                    secretkey = ''.join(random.choices(string.ascii_lowercase + string.digits, k=12))    #generates a random string of length 5 that we are taking as secret key for this user
+                    print("Your secret key is: ", secretkey)
+                    Customer(username, password, id, secretkey)
+                    print(f'Customer {username} registered successfully!')
+            else:
+                print("Invalid role entered. Please enter either A or C\n")
+                           
+            # secretkey = Customer.retrieve_secretkey(user_id) 
+            # auth = verify_user(secretkey) 
+    
+            if auth == False: 
+                print('Challenge-Response Authentication unsuccessful! ') 
+                continue 
+            else: 
+                print('Challenge-Response Authentication successful! ') 
+
+            
+            print("Transactions:") 
+            for transaction in transactions: 
+                if transaction['customer_id'] == id or transaction['author_id'] == id: 
+                    print(transaction)
+            # transactions(datetime.now().timestamp(), customer_id, authorId, pid, secretkey, "cta")
 
         elif user_input == '4':  ###########################################################################################################################################
             role = input("Enter A for Author and C for Customer\n").lower()
